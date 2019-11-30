@@ -1,0 +1,27 @@
+/* Provide sufficient contrast against white background */
+a {
+    color: #0366d6;
+    font-family: "Blizzard", Helvetica, Arial, sans-serif;
+    font-size: 17px;
+}
+
+.grimText {
+    text-transform: uppercase;
+    font-family: "Blizzard", Helvetica, Arial, sans-serif;
+    font-size: 20px;
+}
+
+code {
+  color: #E01A76;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.required:after {
+    content: " *";
+    color: red;
+}

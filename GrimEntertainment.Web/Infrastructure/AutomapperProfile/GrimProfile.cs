@@ -7,11 +7,14 @@ namespace GrimEntertainment.Web.Infrastructure.AutomapperProfile
     {
         public GrimProfile()
         {
-            CreateMap<Game, GameUpsertViewModel>().ReverseMap();
+            CreateMap<Game, GameUpsertViewModel>()
+                .ReverseMap();
 
-            CreateMap<User, UserViewModel>().ReverseMap();
+            CreateMap<User, UserViewModel>()
+                .ReverseMap();
 
-            CreateMap<User, UserLoginModel>().ReverseMap();
+            CreateMap<User, UserLoginModel>()
+                .ReverseMap();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using AutoMapper;
 using GrimEntertainment.Web.Data;
@@ -30,9 +31,14 @@ namespace GrimEntertainment.Web.Controllers
         {
             var games = context.Games.ToList();
 
-            var model = mapper.Map<List<GameUpsertViewModel>>(games);
+            foreach (var game in games)
+            {
+                game.TrailerUrl = game.TrailerUrl.Replace("watch?v=", "embed/") + "?autoplay=1";
+            }
 
-            return Ok(model);
+            //var model = mapper.Map<List<GameUpsertViewModel>>(games);
+
+            return Ok(games);
         }
 
         [HttpPost]
@@ -52,10 +58,43 @@ namespace GrimEntertainment.Web.Controllers
             newGame.Creator = user;
             newGame.CreatorId = user.Id;
 
+            if (model.BannerUrl != null)
+            {
+                var path = @"D:\Projects\GrimEntertainment\GrimEntertainment.Web\ClientApp\public\GamesImages";
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+
+                var filePath = Path.Combine(path, model.BannerUrl.FileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    model.BannerUrl.CopyTo(fileStream);
+                }
+                newGame.BannerUrl = $"/GamesImages/{model.BannerUrl.FileName}";
+            }
             context.Games.Add(newGame);
             context.SaveChanges();
 
-            return Ok(model);
+            return Ok();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("/Games/Delete")]
+        public IActionResult RemoveGame(UserGameViewModel model)
+        {
+            var game = context.Games.FirstOrDefault(x => x.Id.ToString() == model.GameId && x.CreatorId.ToString() == model.UserId);
+
+            if(game == null)
+            {
+                return BadRequest("Game not found!");
+            }
+
+            context.Games.Remove(game);
+            context.SaveChanges();
+
+            return Ok("Game was deleted successfully!");
         }
     }
 }

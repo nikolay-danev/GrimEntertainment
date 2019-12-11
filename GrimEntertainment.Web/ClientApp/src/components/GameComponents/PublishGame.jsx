@@ -44,7 +44,8 @@ export class PublishGame extends Component {
     render() {
         return (
             <Fragment>
-                <p>Publish your game now!</p>
+                <h1 className="pageTitle">Publish your game</h1>
+                <hr/>
                 <form onSubmit={this.onFormSubmit}>
                     <div className="form-group">
                         <label className="control-label required">Title</label>

@@ -1,6 +1,7 @@
 ﻿using GrimEntertainment.Web.Data;
 using GrimEntertainment.Web.Data.Models;
 using GrimEntertainment.Web.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -24,6 +25,23 @@ namespace GrimEntertainment.Web.Controllers
             this.context = context;
             this.hashService = hashService;
             this.configuration = configuration;
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("/Account/User/{id}")]
+        public IActionResult GetUser(string id)
+        {
+            var user = context.Users.FirstOrDefault(x => x.Id.ToString() == id);
+
+            if(user == null)
+            {
+                return BadRequest("User not found!");
+            }
+
+            user.HashedPassword = "";
+
+            return Ok(user);
         }
 
         [HttpPost]

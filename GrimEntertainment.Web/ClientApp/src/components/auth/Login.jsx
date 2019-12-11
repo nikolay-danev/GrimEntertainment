@@ -48,7 +48,8 @@ export class Login extends Component {
     render() {
         return (
             <Fragment>
-                <h1>Login</h1>
+                <h1 className="pageTitle">Login</h1>
+                <hr/>
                 <form onSubmit={this.onFormSubmit}>
                     <div className="form-group">
                         <label className="control-label required">Username</label>

@@ -27,7 +27,7 @@ export class Register extends Component {
             body: JSON.stringify(this.state) 
         }).then(function(response) {
             if (response.status === 200) {
-                window.location.href = '/';
+                window.location.href = '/login';
             }
         }).catch(function(error) {
                 console.log(error);
@@ -37,7 +37,8 @@ export class Register extends Component {
     render() {
         return (
             <Fragment>
-                <h1>Register your account and unleash your game</h1>
+                <h1 className="pageTitle">Register account</h1>
+                <hr/>
                 <form onSubmit={this.onFormSubmit}>
                     <div className="form-group">
                         <label className="control-label required">Email</label>

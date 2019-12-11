@@ -24,9 +24,11 @@ export class NavMenu extends Component {
     }
 
     render() {
-        let gamesButton = IsAuthenticated() ? <Navbar> <ul className="navbar-nav flex-grow"> < NavItem >
-            <NavLink tag={Link} className="grimText" to="/publishGame">publish game</NavLink>
-        </NavItem> </ul></Navbar> : '';
+        let gamesButton = IsAuthenticated() ? <Navbar> <ul className="navbar-nav flex-grow">
+            <NavItem>
+                <NavLink tag={Link} className="grimText" to="/publishGame">publish game</NavLink>
+            </NavItem>
+        </ul></Navbar> : '';
 
         return (
             <header>

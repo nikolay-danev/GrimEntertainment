@@ -7,6 +7,7 @@ import { Register } from './components/auth/Register'
 import { Login } from './components/auth/Login'
 import { Logout } from './components/auth/Logout'
 import { PublishGame } from './components/GameComponents/PublishGame'
+import { Profile } from './components/Profile';
 
 import './custom.css'
 
@@ -21,6 +22,7 @@ export default class App extends Component {
                 <Route path='/login' component={Login} />
                 <Route path='/logout' component={Logout} />
                 <AuthorizedRoute path='/publishGame' component={PublishGame} />
+                <AuthorizedRoute path='/profile' component={Profile} />
             </Layout>
         );
     }

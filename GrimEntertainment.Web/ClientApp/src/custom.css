@@ -1,18 +1,25 @@
 /* Provide sufficient contrast against white background */
+* {
+    margin: 0;
+    padding: 0;
+}
 a {
     color: #0366d6;
-    font-family: "Blizzard", Helvetica, Arial, sans-serif;
+    font-family: Candara, sans-serif;
     font-size: 17px;
 }
-
 .grimText {
     text-transform: uppercase;
-    font-family: "Blizzard", Helvetica, Arial, sans-serif;
+    font-family: Candara, sans-serif;
     font-size: 20px;
 }
 
 code {
   color: #E01A76;
+}
+html,
+body {
+    height: 100%;
 }
 
 .btn-primary {
@@ -24,4 +31,56 @@ code {
 .required:after {
     content: " *";
     color: red;
+}
+
+.eighteenRem {
+    width: 18rem;
+}
+
+.pageTitle {
+    text-align: center;
+    position: center;
+    color: darkred;
+    text-transform: uppercase;
+    font: bolder;
+    font-family: Candara, sans-serif;
+}
+#sticky-footer {
+    margin-top: 10px;
+    flex-shrink: unset;
+    border-top: 1px solid darkred;
+    padding-bottom: 0 !important;
+    height: 60px;
+    display: block;
+    font-size: 0.75em;
+    bottom: 0;
+    width: 100%;
+    position: relative;
+}
+
+    #sticky-footer p, small {
+        color: darkred;
+        text-transform: uppercase;
+        font-family: Candara, sans-serif;
+    }
+
+.card-deck .card {
+    flex: none;
+}
+.popup-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 0;
+    border: 1px solid #888;
+    width: 350px !important;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s;
+    height: 50%;
+}
+.popup-arrow{
+    height: 0 !important;
 }

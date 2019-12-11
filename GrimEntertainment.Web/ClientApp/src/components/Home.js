@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
+import Game from '../components/GameComponents/Game';
+import { Decode } from '../components/JwtDecoder';
+import { IsAuthenticated } from '../Services/UserService';
+import { Fragment } from 'react';
 
 export class Home extends Component {
-  static displayName = Home.name;
+    static displayName = Home.name;
     constructor(props) {
         super(props);
         this.state = { games: [], loading: true };
@@ -10,37 +14,77 @@ export class Home extends Component {
         this.GetAllGames();
     }
 
-    static renderGamesTable(games) {
-        return (
-            <table className='table table-striped' aria-labelledby="tabelLabel">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Author</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {games.map(game =>
-                        <tr key={game.title}>
-                            <td>{game.title}</td>
-                            <td>{game.publisher}</td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
-        );
+    handleSearchText = (e) => {
+        let value = e.target.value;
+        if (value === '') {
+            this.GetAllGames();
+        }
+        let filteredGames = this.state.games.filter(game => game.title.toLowerCase().includes(value.toLowerCase()));
+        this.setState({ games: filteredGames });
     }
+
+    handleDelete = itemId => {
+        if (IsAuthenticated) {
+
+            let user = Decode(sessionStorage.getItem('authToken'));
+            const items = this.state.games.filter(item => item.id !== itemId);
+            this.setState({ games: items });
+
+            let data = {
+                gameId: itemId,
+                userId: user.id
+            };
+
+            fetch('/Games/Delete', {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`
+                },
+                body: JSON.stringify(data)
+            }).then(function (response) {
+                if (response.status === 200) {
+                    console.log(response);
+                }
+            }).catch(function (error) {
+                console.log(error);
+            });
+        }
+    };
 
     render() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
-            : Home.renderGamesTable(this.state.games);
+            : this.state.games.map(game => {
+                return (<Game key={game.id} {...game} onDelete={this.handleDelete} />)
+            });
 
+        let videoStyle = {
+            width: '100%',
+            heigth: 'auto',
+            position: "relative",
+            zIndex: '-999',
+            border: '3px solid darkred'
+        }
+        let hasUser = IsAuthenticated();
+        
         return (
-            <div>
-                <h1 id="tabelLabel" >Games</h1>
-                {contents}
-            </div>
+            <Fragment>
+                <h1 className="pageTitle">welcome</h1>
+                <hr />
+                <video style={videoStyle} autoPlay loop>
+                    <source src="//www.warmane.com/renders/darna.mp4" />
+                    <source src="//www.warmane.com/renders/darna.webm" />
+                </video>
+                <hr />
+                <input className="form-control" type="text" placeholder="Search games..." aria-label="Search" style={{ marginBottom: 15 }} onChange={this.handleSearchText} />
+                {hasUser ? <div className="card-deck" style={{ overflowY: 'scroll', border: '2px solid darkred', width: '975px', left: '100px', height: '500px', position: 'relative', marginBottom: '15px' }}>
+                    {contents}
+                </div> : <h1 className="pageTitle">register to experience all games</h1>}
+            </Fragment>
         );
     }
 

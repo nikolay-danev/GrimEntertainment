@@ -36,11 +36,31 @@ namespace GrimEntertainment.Web.Controllers
 
             if(user == null)
             {
-                return BadRequest("User not found!");
+                return BadRequest(new ErrorModel { ErrorMessage = "User not found!" });
             }
 
             user.HashedPassword = "";
 
+            return Ok(user);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("/Account/Update")]
+        public IActionResult Update(UpdateUserViewModel model)
+        {
+            var user = context.Users.FirstOrDefault(x => x.Email == model.Email);
+            if(user == null)
+            {
+                return BadRequest(new ErrorModel { ErrorMessage = "User not found!" });
+            }
+
+            if(user.Username != model.Username)
+            {
+                user.Username = model.Username;
+                context.Users.Update(user);
+                context.SaveChanges();
+            }
             return Ok(user);
         }
 
@@ -52,7 +72,7 @@ namespace GrimEntertainment.Web.Controllers
             {
                 if(context.Users.ToList().Any(x => x.Email == model.Email || x.Username == model.Username))
                 {
-                    return BadRequest(model);
+                    return BadRequest(new ErrorModel { ErrorMessage = "User already exists with this email or username!" });
                 }
 
                 var newUser = new User
@@ -65,9 +85,9 @@ namespace GrimEntertainment.Web.Controllers
                 context.Users.Add(newUser);
                 context.SaveChanges();
 
-                return Ok();
+                return Ok(model);
             }
-            return BadRequest(model);
+            return BadRequest(new ErrorModel { ErrorMessage = "Invalid data!" });
         }
 
         [HttpPost]
@@ -76,14 +96,14 @@ namespace GrimEntertainment.Web.Controllers
         {
             if(!ModelState.IsValid)
             {
-                return BadRequest(model);
+                return BadRequest(new ErrorModel { ErrorMessage = "Invalid input data!" });
             }
 
             var user = CheckIfUserAuthIsValid(model);
 
             if(user == null)
             {
-                return BadRequest(model);
+                return BadRequest(new ErrorModel { ErrorMessage = "Invalid username or password!" });
             }
 
             var tokenHandler = new JwtSecurityTokenHandler();

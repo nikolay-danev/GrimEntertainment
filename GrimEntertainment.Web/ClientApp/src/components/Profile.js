@@ -8,10 +8,40 @@ export class Profile extends Component {
     static displayName = Profile.name;
     constructor(props) {
         super(props);
-        this.state = { user: '', loading: true };
+        this.state = { user: '', username: '', email: '', loading: true };
     }
     componentDidMount() {
         this.GetAllGames();
+    }
+
+    handleFieldChange = (sender) => {
+        this.setState({ username: sender.target.value });
+    }
+
+    onFormSubmit = (e) => {
+        e.preventDefault();
+
+        let data = { email: this.state.email, username: this.state.username };
+
+        fetch('/Account/Update', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`
+            },
+            redirect: 'follow',
+            referrer: 'no-referrer',
+            body: JSON.stringify(data)
+        }).then(function (response) {
+            if (response.status === 200) {
+                window.location.href = '/profile';
+            }
+        }).catch(function (error) {
+            console.log(error);
+        });
     }
 
     render() {
@@ -23,20 +53,23 @@ export class Profile extends Component {
         let userContent = this.state.loading
             ? <p><em>Loading...</em></p>
             : this.state.user;
-
        
         return (
             <Fragment>
                 <h1 className="pageTitle">Your data, {user.username}!</h1>
                 <hr />
+                <form onSubmit={this.onFormSubmit}>
+                    <div className="form-group">
+                        <label className="control-label">Email</label>
+                        <input className="form-control" disabled type="email" value={this.state.email} name="email" />
+                    </div>
                 <div className="form-group">
-                    <label className="control-label">Email</label>
-                    <input className="form-control" disabled type="email" value={userContent.email} name="email" />
-                </div>
-                <div className="form-group">
-                    <label className="control-label">Username</label>
-                    <input className="form-control" type="text" value={userContent.username} name="username" />
-                </div>
+                        <label className="control-label">Username</label>
+                        <input className="form-control" type="text" value={this.state.username} onChange={this.handleFieldChange} name="username" />
+                    </div>
+                    <button className="btn btn-primary" type="submit">Update</button>
+                </form>
+
             </Fragment>
         );
     }
@@ -60,6 +93,8 @@ export class Profile extends Component {
         if (response.ok) {
             const data = await response.json();
             this.setState({ user: data, loading: false });
+            this.setState({ username: data.username })
+            this.setState({ email: data.email })
         }
         else {
             if (response.status === 401) {

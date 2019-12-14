@@ -48,9 +48,13 @@ namespace GrimEntertainment.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(model);
+                return BadRequest(new ErrorModel { ErrorMessage = "Invalid game input data!" });
             }
-
+            var game = context.Games.FirstOrDefault(x => x.Title == model.Title);
+            if (game != null)
+            {
+                return BadRequest(new ErrorModel { ErrorMessage = "Game with this title already exists!" });
+            }
             var user = userService.GetUser(Request.Headers["Authorization"].ToString());
 
             var newGame = mapper.Map<Game>(model);
@@ -76,8 +80,41 @@ namespace GrimEntertainment.Web.Controllers
             context.Games.Add(newGame);
             context.SaveChanges();
 
-            return Ok();
+            return Ok(model);
         }
+
+        [HttpGet]
+        [Authorize]
+        [Route("/Game/Like/{id}")]
+        public IActionResult LikeGame(string id)
+        {
+            var game = context.Games.FirstOrDefault(x => x.Id.ToString() == id);
+            if(game == null)
+            {
+                return BadRequest("Game not found!");
+            }
+
+            game.Rating += 1;
+            context.Games.Update(game);
+            context.SaveChanges();
+
+            return Ok(game);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("/Game/Get/{id}")]
+        public IActionResult GetGame(string id)
+        {
+            var game = context.Games.FirstOrDefault(x => x.Id.ToString() == id);
+            if (game == null)
+            {
+                return BadRequest(new ErrorModel { ErrorMessage = "Game not found!" });
+            }
+
+            return Ok(game);
+        }
+
 
         [HttpPost]
         [Authorize]
@@ -88,13 +125,37 @@ namespace GrimEntertainment.Web.Controllers
 
             if(game == null)
             {
-                return BadRequest("Game not found!");
+                return BadRequest(new ErrorModel { ErrorMessage = "Game not found!" });
             }
 
             context.Games.Remove(game);
             context.SaveChanges();
 
-            return Ok("Game was deleted successfully!");
+            return Ok(model);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("/Games/Edit")]
+        public IActionResult EditGame(EditGameViewModel model)
+        {
+            var game = context.Games.FirstOrDefault(x => x.Id.ToString() == model.Id);
+
+            if (game == null)
+            {
+                return BadRequest("Game not found!");
+            }
+
+            game.Title = model.Title;
+            game.Publisher = model.Publisher;
+            game.DownloadLink = model.DownloadLink;
+            game.TrailerUrl = model.TrailerUrl;
+            game.Description = model.Description;
+
+            context.Games.Update(game);
+            context.SaveChanges();
+
+            return Ok(game);
         }
     }
 }

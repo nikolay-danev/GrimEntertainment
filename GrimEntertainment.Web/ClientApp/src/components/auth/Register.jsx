@@ -1,10 +1,11 @@
 ﻿import React, { Component, Fragment } from 'react';
+import { Error } from '../Error';
 
 export class Register extends Component {
     constructor(props) {
         super(props);
 
-        this.state = { email: '', username: '', password: '', confirmPassword: '' };
+        this.state = { email: '', username: '', password: '', confirmPassword: '', errorMessage: '' };
     }
 
     handleFieldChange = (sender) => {
@@ -13,30 +14,38 @@ export class Register extends Component {
 
     onFormSubmit = (e) => {
         e.preventDefault();
-
-        fetch('/Account/Register', {
-            method: 'POST',
-            mode: 'cors',
-            cache: 'no-cache',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            redirect: 'follow',
-            referrer: 'no-referrer',
-            body: JSON.stringify(this.state) 
-        }).then(function(response) {
-            if (response.status === 200) {
-                window.location.href = '/login';
-            }
-        }).catch(function(error) {
-                console.log(error);
+    
+            fetch('/Account/Register', {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                redirect: 'follow',
+                referrer: 'no-referrer',
+                body: JSON.stringify(this.state)
+            }).then(async function (response) {
+                let resData = await response.json();
+                if (response.status === 200) {
+                    window.location.href = '/login';
+                } else {
+                    throw new Error(resData.errorMessage);
+                }
+            }).catch(error => {
+                this.setState({ errorMessage: error.props });
             });
     }
 
     render() {
+        let errorContent;
+        if (this.state.errorMessage) {
+            errorContent = <Error errorMessage={this.state.errorMessage} />;
+        }
         return (
             <Fragment>
+                {errorContent}
                 <h1 className="pageTitle">Register account</h1>
                 <hr/>
                 <form onSubmit={this.onFormSubmit}>

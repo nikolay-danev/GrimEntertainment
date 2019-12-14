@@ -10,6 +10,17 @@ class Game extends Component {
     }
 
     handleLike = (e) => {
+
+        let url = ' /Game/Like/' + this.props.id;
+
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`
+            }
+        });
+
         this.setState({ likes: this.state.likes + 1 });
     }
 
@@ -19,7 +30,7 @@ class Game extends Component {
         if (IsAuthenticated()) {
             user = Decode(sessionStorage.getItem('authToken'));
             buttons = <div>
-                <a style={{ color: 'darkred' }} className="btn btn-warning">EDIT</a>
+                <a onClick={() => this.props.onEdit(this.props.id)} style={{ color: 'darkred' }} className="btn btn-warning">EDIT</a>
                 <a onClick={() => this.props.onDelete(this.props.id)} style={{ marginLeft: 5 }} className="btn btn-danger deleteGame">DELETE</a>
             </div>
         }

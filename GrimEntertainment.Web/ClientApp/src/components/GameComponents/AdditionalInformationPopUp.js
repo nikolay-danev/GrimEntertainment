@@ -11,16 +11,19 @@ export class AdditionalInformationPopUp extends Component {
 
     render() {
         return (
-            <Popup trigger={<a style={{ marginLeft: 10, overflowY: 'scroll' }} rel="noopener noreferrer" title="Additional info"><i style={{ color: "darkred" }} className="fa fa-question" aria-hidden="true"></i></a>} position="top left">
+            <Popup trigger={<a style={{ marginLeft: 10 }} rel="noopener noreferrer" title="Additional info"><i style={{ color: "darkred" }} className="fa fa-question" aria-hidden="true"></i></a>} position="top left">
                 {close => (
                     <div>
-                        <p style={{ color: 'darkred', fontFamily: 'Candara, sans-serif' }}>{this.state.description}</p>
+                        <div className="scrollable" style={{ color: 'darkred', fontFamily: 'Candara, sans-serif' }}>{this.state.description}</div>
                         <a href={this.state.downloadLink} target="_blank" className="pageTitle" style={{
                             bottom: 0,
                             position: "absolute",
-                            textDecoration: "none"
+                            textDecoration: "none",
+                            backgroundColor: "lightgrey",
+                            width: 348,
+                            left: 0
                         }}>Download now</a>
-                        <a className="close" onClick={close} style={{ position: "absolute", top: 0, right: 0 }}>
+                        <a className="close" onClick={close} style={{ position: "absolute", top: -20, right: -15 }}>
                             &times;
         </a>
                     </div>

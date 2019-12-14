@@ -1,38 +1,44 @@
 ﻿import React, { Component, Fragment } from 'react';
 
 import { Error } from '../Error';
-export class PublishGame extends Component {
+export class EditGame extends Component {
     constructor(props) {
         super(props);
 
-        this.state = { title: '', publisher: '', bannerUrl: null, trailerUrl: '', downloadLink: '', description: '', errorMessage: '' };
+        this.state = { id: '', title: '', publisher: '', trailerUrl: '', downloadLink: '', description: '', staticGameTitle: '', errorMessage: '' };
     }
 
     handleFieldChange = (sender) => {
         this.setState({ [sender.target.name]: sender.target.value });
     }
-
-    handleFile = (sender) => {
-        this.setState({ bannerUrl: sender.target.files[0] });
+    componentDidMount() {
+        this.GetGame();
     }
 
+    async GetGame() {
+       const response = await fetch('/Game/Get/' + this.props.match.params.id, {
+            method: 'GET',
+            mode: 'cors',
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`
+            }
+       });
+        const data = await response.json();
+        this.setState({ staticGameTitle: data.title, id: data.id, title: data.title, publisher: data.publisher, trailerUrl: data.trailerUrl, downloadLink: data.downloadLink, description: data.description });
+    }
     onFormSubmit = (e) => {
         e.preventDefault();
 
-        let data = new FormData();
-        data.append('bannerUrl', this.state.bannerUrl);
-        data.append('title', this.state.title);
-        data.append('publisher', this.state.publisher);
-        data.append('trailerUrl', this.state.trailerUrl);
-        data.append('downloadLink', this.state.downloadLink);
-        data.append('description', this.state.description);
-
-        fetch('/Games/Publish', {
+        fetch('/Games/Edit', {
             method: 'POST',
             headers: {
+                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`
             },
-            body: data
+            body: JSON.stringify(this.state)
         }).then(async function (response) {
             let resData = await response.json();
             if (response.status === 200) {
@@ -52,10 +58,11 @@ export class PublishGame extends Component {
         }
         return (
             <Fragment>
-                {errorContent}
-                <h1 className="pageTitle">Publish your game</h1>
-                <hr/>
+                 {errorContent}
+                <h1 className="pageTitle">Editing - {this.state.staticGameTitle}</h1>
+                <hr />
                 <form onSubmit={this.onFormSubmit}>
+                    <input hidden name="id" value={this.state.id} />
                     <div className="form-group">
                         <label className="control-label required">Title</label>
                         <input className="form-control" required type="text" value={this.state.title} onChange={this.handleFieldChange} name="title" />
@@ -76,11 +83,7 @@ export class PublishGame extends Component {
                         <label className="control-label">Description</label>
                         <textarea className="form-control" type="text" value={this.state.description} onChange={this.handleFieldChange} name="description"></textarea>
                     </div>
-                    <div className="image-container">
-                        <label className="control-label">Banner</label>
-                        <input className="form-control" type="file" onChange={this.handleFile} name="bannerUrl" />
-                    </div>
-                    <button className="btn btn-primary" type="submit">PUBLISH</button>
+                    <button className="btn btn-primary" type="submit">EDIT</button>
                 </form>
             </Fragment>
         );

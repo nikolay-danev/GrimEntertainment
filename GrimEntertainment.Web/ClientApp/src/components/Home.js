@@ -3,6 +3,9 @@ import Game from '../components/GameComponents/Game';
 import { Decode } from '../components/JwtDecoder';
 import { IsAuthenticated } from '../Services/UserService';
 import { Fragment } from 'react';
+import { PublishGame } from 'react';
+
+import { Error } from '../components/Error';
 
 export class Home extends Component {
     static displayName = Home.name;
@@ -45,13 +48,22 @@ export class Home extends Component {
                     'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`
                 },
                 body: JSON.stringify(data)
-            }).then(function (response) {
+            }).then(async function (response) {
+                let resData = await response.json();
                 if (response.status === 200) {
                     console.log(response);
+                } else {
+                    throw new Error(resData.errorMessage);
                 }
-            }).catch(function (error) {
-                console.log(error);
+            }).catch(error => {
+                this.setState({ errorMessage: error.props });
             });
+        }
+    };
+
+    handleEdit = itemId => {
+        if (IsAuthenticated) {
+            window.location.href = "/game/edit/" + itemId;
         }
     };
 
@@ -59,7 +71,7 @@ export class Home extends Component {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
             : this.state.games.map(game => {
-                return (<Game key={game.id} {...game} onDelete={this.handleDelete} />)
+                return (<Game key={game.id} {...game} onDelete={this.handleDelete} onEdit={this.handleEdit} />)
             });
 
         let videoStyle = {
@@ -70,9 +82,13 @@ export class Home extends Component {
             border: '3px solid darkred'
         }
         let hasUser = IsAuthenticated();
-        
+        let errorContent;
+        if (this.state.errorMessage) {
+            errorContent = <Error errorMessage={this.state.errorMessage} />;
+        }
         return (
             <Fragment>
+                {errorContent}
                 <h1 className="pageTitle">welcome</h1>
                 <hr />
                 <video style={videoStyle} autoPlay loop>

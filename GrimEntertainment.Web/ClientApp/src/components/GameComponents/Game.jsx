@@ -36,7 +36,7 @@ class Game extends Component {
         }
         return (
             <div className="card eighteenRem" style={{ marginTop: '10px', marginBottom: '10px', border: '1px solid darkred' }}>
-                <img src={this.props.bannerUrl} style={{ height: 285 }} className="card-img-top" alt="..." />
+                <img src={this.props.bannerUrl} style={{ height: 285 }} className="card-img-top" alt="No image" />
                 <div className="card-body">
                     <h5 className="card-title">{this.props.title}</h5>
                 </div>

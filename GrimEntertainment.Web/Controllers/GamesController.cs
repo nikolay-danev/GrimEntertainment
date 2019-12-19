@@ -80,7 +80,7 @@ namespace GrimEntertainment.Web.Controllers
             context.Games.Add(newGame);
             context.SaveChanges();
 
-            return Ok(model);
+            return Ok(newGame);
         }
 
         [HttpGet]

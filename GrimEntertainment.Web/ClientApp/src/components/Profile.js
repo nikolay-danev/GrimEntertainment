@@ -3,12 +3,13 @@ import Game from '../components/GameComponents/Game';
 import { Decode } from '../components/JwtDecoder';
 import { IsAuthenticated } from '../Services/UserService';
 import { Fragment } from 'react';
+import { Error } from '../components/Error';
 
 export class Profile extends Component {
     static displayName = Profile.name;
     constructor(props) {
         super(props);
-        this.state = { user: '', username: '', email: '', loading: true };
+        this.state = { user: '', username: '', email: '', loading: true, errorMessage: ''  };
     }
     componentDidMount() {
         this.GetAllGames();
@@ -35,12 +36,15 @@ export class Profile extends Component {
             redirect: 'follow',
             referrer: 'no-referrer',
             body: JSON.stringify(data)
-        }).then(function (response) {
+        }).then(async function (response) {
             if (response.status === 200) {
                 window.location.href = '/profile';
+            } else {
+                let resData = await response.json();
+                throw new Error(resData.errorMessage);
             }
-        }).catch(function (error) {
-            console.log(error);
+        }).catch(error => {
+            this.setState({ errorMessage: error.props });
         });
     }
 
@@ -53,9 +57,13 @@ export class Profile extends Component {
         let userContent = this.state.loading
             ? <p><em>Loading...</em></p>
             : this.state.user;
-       
+        let errorContent;
+        if (this.state.errorMessage) {
+            errorContent = <Error errorMessage={this.state.errorMessage} />;
+        }
         return (
             <Fragment>
+                {errorContent}
                 <h1 className="pageTitle">Your data, {user.username}!</h1>
                 <hr />
                 <form onSubmit={this.onFormSubmit}>

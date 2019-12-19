@@ -91,7 +91,7 @@ namespace GrimEntertainment.Web.Controllers
             var game = context.Games.FirstOrDefault(x => x.Id.ToString() == id);
             if(game == null)
             {
-                return BadRequest("Game not found!");
+                return BadRequest(new ErrorModel { ErrorMessage = "Game not found!" });
             }
 
             game.Rating += 1;
@@ -143,9 +143,16 @@ namespace GrimEntertainment.Web.Controllers
 
             if (game == null)
             {
-                return BadRequest("Game not found!");
+                return BadRequest(new ErrorModel { ErrorMessage = "Game not found!" });
             }
 
+            if(model.Title == null || 
+                model.Title == string.Empty || model.Publisher == null ||
+                model.Publisher == string.Empty)
+            {
+                return BadRequest(new ErrorModel { ErrorMessage = "Title and Publisher should not be empty!" });
+            }
+            
             game.Title = model.Title;
             game.Publisher = model.Publisher;
             game.DownloadLink = model.DownloadLink;

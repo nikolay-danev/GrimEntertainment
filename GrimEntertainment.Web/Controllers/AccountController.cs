@@ -54,7 +54,10 @@ namespace GrimEntertainment.Web.Controllers
             {
                 return BadRequest(new ErrorModel { ErrorMessage = "User not found!" });
             }
-
+            if(model.Username == string.Empty || model.Username == null)
+            {
+                return BadRequest(new ErrorModel { ErrorMessage = "Username cannot be empty!" });
+            }
             if(user.Username != model.Username)
             {
                 user.Username = model.Username;
